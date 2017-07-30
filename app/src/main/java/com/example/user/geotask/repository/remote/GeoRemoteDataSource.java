@@ -2,7 +2,13 @@ package com.example.user.geotask.repository.remote;
 
 import android.support.annotation.NonNull;
 
+import com.example.user.geotask.model.places.Places;
 import com.example.user.geotask.repository.Repository;
+import com.example.user.geotask.source.network.NetworkFactory;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -22,13 +28,22 @@ public class GeoRemoteDataSource implements Repository {
         return INSTANCE;
     }
 
-    @Override
-    public void getWeathers(@NonNull LoadWeathersCallback callback) {
-
-    }
 
     @Override
-    public void getWeathers(@NonNull GetWeatherCallback callback) {
+    public void getPlaces(String places,@NonNull PlaceCallback callback) {
+        Call<Places> call=NetworkFactory.getService().getPlaces(places);
+        call.enqueue(new Callback<Places>() {
+            @Override
+            public void onResponse(Call<Places> call, Response<Places> response) {
+                callback.onWeatherLoaded(response.body());
+                Places places1=response.body();
+            }
+
+            @Override
+            public void onFailure(Call<Places> call, Throwable t) {
+
+            }
+        });
 
     }
 }

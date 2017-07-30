@@ -1,6 +1,6 @@
 package com.example.user.geotask.source.network;
 
-import com.example.user.geotask.places.Places;
+import com.example.user.geotask.model.places.Places;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -11,7 +11,7 @@ import retrofit2.http.Query;
  */
 
 public interface GeoService {
-    @GET("/place/autocomplete/json?types=geocode")
+    @GET("maps/api/place/autocomplete/json?sensor=false&types=(cities)")
     public Call<Places> getPlaces(@Query("input") String place);
 
 }

@@ -23,13 +23,9 @@ public class GeoLocalDataSource implements Repository {
         return INSTANCE;
     }
 
-    @Override
-    public void getWeathers(@NonNull LoadWeathersCallback callback) {
-
-    }
 
     @Override
-    public void getWeathers(@NonNull GetWeatherCallback callback) {
-
+    public void getPlaces(String place,@NonNull PlaceCallback callback) {
+int f=4;
     }
 }

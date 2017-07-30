@@ -1,5 +1,5 @@
 
-package com.example.user.geotask.places;
+package com.example.user.geotask.model.places;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

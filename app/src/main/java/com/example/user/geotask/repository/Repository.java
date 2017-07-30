@@ -2,9 +2,7 @@ package com.example.user.geotask.repository;
 
 import android.support.annotation.NonNull;
 
-import com.example.user.geotask.places.Places;
-
-import java.util.List;
+import com.example.user.geotask.model.places.Places;
 
 /**
  * Created by Serdun on 16.07.2017.
@@ -12,22 +10,14 @@ import java.util.List;
 
 public interface Repository {
 
-    interface LoadWeathersCallback {
-
-        void onWeathersLoaded(List<Places> weathers);
-
-        void onDataNotAvailable();
-    }
-
-    interface GetWeatherCallback {
+    interface PlaceCallback {
 
         void onWeatherLoaded(Places weather);
 
         void onDataNotAvailable();
     }
 
-    void getWeathers(@NonNull LoadWeathersCallback callback);
 
-    void getWeathers(@NonNull GetWeatherCallback callback);
+    void getPlaces(String places,@NonNull PlaceCallback callback);
 
 }
