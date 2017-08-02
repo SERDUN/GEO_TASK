@@ -1,8 +1,11 @@
 package com.example.user.geotask.screen.beginningPathFragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +14,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.user.geotask.R;
 import com.example.user.geotask.model.places.Places;
@@ -20,6 +23,9 @@ import com.example.user.geotask.model.places.Prediction;
 import com.example.user.geotask.repository.PlacesRepository;
 import com.example.user.geotask.repository.local.GeoLocalDataSource;
 import com.example.user.geotask.repository.remote.GeoRemoteDataSource;
+import com.example.user.geotask.screen.baseContainerActivity.BeginningPathRecyclerAdapter;
+import com.example.user.geotask.screen.baseContainerActivity.MapDialogFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -29,6 +35,7 @@ public class BeginningPathPageFragment extends Fragment implements BeginningPath
     private EditText etPlaces;
     private RecyclerView recyclerView;
     private BeginningPathRecyclerAdapter beginningPathRecyclerAdapter;
+    private ConstraintLayout constraintLayout;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -42,7 +49,6 @@ public class BeginningPathPageFragment extends Fragment implements BeginningPath
     private OnFragmentInteractionListener mListener;
 
     public BeginningPathPageFragment() {
-        // Required empty public constructor
     }
 
 
@@ -77,12 +83,25 @@ public class BeginningPathPageFragment extends Fragment implements BeginningPath
     }
 
     private void init(View view) {
-        beginningPathRecyclerAdapter = new BeginningPathRecyclerAdapter(new ArrayList<>());
+        beginningPathRecyclerAdapter = new BeginningPathRecyclerAdapter(position -> {
+            Snackbar bar = Snackbar.make(getActivity().findViewById(R.id.main_container), "Показати на карті?", Snackbar.LENGTH_SHORT);
+
+            bar.setAction("open", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                  presenter.getDetailsPlace(position.getPlaceId());
+                }
+            });
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            bar.show();
+
+
+        }, new ArrayList<>());
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rvPlaces);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(beginningPathRecyclerAdapter);
-
         etPlaces = (EditText) view.findViewById(R.id.etPlaces);
 
         etPlaces.addTextChangedListener(new TextWatcher() {
@@ -101,6 +120,8 @@ public class BeginningPathPageFragment extends Fragment implements BeginningPath
 
             }
         });
+
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -129,19 +150,18 @@ public class BeginningPathPageFragment extends Fragment implements BeginningPath
 
     @Override
     public void showNewPlaces(Places places) {
-        ((BeginningPathRecyclerAdapter)recyclerView.getAdapter()).setPlaces((ArrayList<Prediction>) places.getPredictions());
+        ((BeginningPathRecyclerAdapter) recyclerView.getAdapter()).setPlaces((ArrayList<Prediction>) places.getPredictions());
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void showPlacesInMap(double lat, double lng) {
+        MapDialogFragment mapDialogFragment=MapDialogFragment.newInstance(lat,lng);
+//        MapDialogFragment mapDialogFragment=new MapDialogFragment();
+//        mapDialogFragment.setLatLng(new LatLng(lat,lng));
+        mapDialogFragment.show(getActivity().getSupportFragmentManager(),"map");
+    }
+
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

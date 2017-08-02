@@ -4,25 +4,38 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.user.geotask.R;
+import com.example.user.geotask.model.places.Places;
+import com.example.user.geotask.model.places.Prediction;
+import com.example.user.geotask.repository.PlacesRepository;
+import com.example.user.geotask.repository.local.GeoLocalDataSource;
+import com.example.user.geotask.repository.remote.GeoRemoteDataSource;
+import com.example.user.geotask.screen.baseContainerActivity.BeginningPathRecyclerAdapter;
+import com.example.user.geotask.screen.beginningPathFragment.BeginningPathContract;
+import com.example.user.geotask.screen.endRoadFragment.EndRoadContract;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EndRoadPageFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EndRoadPageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class EndRoadPageFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+import java.util.ArrayList;
+
+
+public class EndRoadPageFragment extends Fragment implements EndRoadContract.View {
+
+    private EditText etPlaces;
+    private RecyclerView recyclerView;
+    private BeginningPathRecyclerAdapter beginningPathRecyclerAdapter;
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    BeginningPathContract.Presenter presenter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -34,14 +47,7 @@ public class EndRoadPageFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EndRoadPageFragment.
-     */
+
     // TODO: Rename and change types and number of parameters
     public static EndRoadPageFragment newInstance(String param1, String param2) {
         EndRoadPageFragment fragment = new EndRoadPageFragment();
@@ -65,7 +71,40 @@ public class EndRoadPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting_second_page, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_setting_second_page, container, false);
+        presenter = new EndRoadPresenter(this, PlacesRepository.getInstance(GeoRemoteDataSource.getInstance(), GeoLocalDataSource.getInstance(getContext())));
+        init(view);
+        return view;
+    }
+
+    private void init(View view) {
+        beginningPathRecyclerAdapter = new BeginningPathRecyclerAdapter(position -> {
+
+        },new ArrayList<>());
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.rvPlaces);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(beginningPathRecyclerAdapter);
+
+        etPlaces = (EditText) view.findViewById(R.id.etPlaces);
+
+        etPlaces.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                presenter.getPlacesByWord(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -90,6 +129,11 @@ public class EndRoadPageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void showNewPlaces(Places places) {
+        ((BeginningPathRecyclerAdapter)recyclerView.getAdapter()).setPlaces((ArrayList<Prediction>) places.getPredictions());
     }
 
     /**

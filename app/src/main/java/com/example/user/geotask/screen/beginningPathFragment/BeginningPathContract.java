@@ -12,12 +12,16 @@ import java.util.ArrayList;
 
 public class BeginningPathContract {
     public interface View extends BaseView {
-        public void  showNewPlaces(Places places);
+        public void showNewPlaces(Places places);
+
+        public void showPlacesInMap(double lat, double lng);
 
     }
 
-    public  interface Presenter extends BasePresenter {
+    public interface Presenter extends BasePresenter {
 
         public void getPlacesByWord(String place);
+
+        public void getDetailsPlace(String placeId);
     }
 }

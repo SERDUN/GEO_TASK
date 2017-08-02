@@ -1,29 +1,33 @@
-package com.example.user.geotask.screen.beginningPathFragment;
+package com.example.user.geotask.screen.baseContainerActivity;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.user.geotask.R;
-import com.example.user.geotask.model.places.Places;
 import com.example.user.geotask.model.places.Prediction;
+import com.example.user.geotask.screen.baseContainerActivity.listener.RecyclerViewListener;
 
 import java.util.ArrayList;
 
-/**
- * Created by User on 29.07.2017.
- */
 
 public class BeginningPathRecyclerAdapter extends RecyclerView.Adapter<BeginningPathRecyclerAdapter.PlaceHolder> {
+    private ArrayList<Prediction> predictions;
+    private RecyclerViewListener recyclerViewListener;
+    private int lastCheckedPosition = -1;
 
-    ArrayList<Prediction> predictions;
 
-    public BeginningPathRecyclerAdapter(ArrayList<Prediction> predictions) {
-        this.predictions = predictions;
+    public int getLastCheckedPosition() {
+        return lastCheckedPosition;
     }
 
+    public BeginningPathRecyclerAdapter(RecyclerViewListener recyclerViewListener, ArrayList<Prediction> predictions) {
+        this.recyclerViewListener = recyclerViewListener;
+        this.predictions = predictions;
+    }
 
     public void setPlaces(ArrayList<Prediction> places) {
         predictions = places;
@@ -40,8 +44,9 @@ public class BeginningPathRecyclerAdapter extends RecyclerView.Adapter<Beginning
 
     @Override
     public void onBindViewHolder(PlaceHolder holder, int position) {
-        int f=4;
         holder.bindView(predictions.get(position));
+        holder.select.setChecked(position == lastCheckedPosition);
+
 
     }
 
@@ -51,17 +56,26 @@ public class BeginningPathRecyclerAdapter extends RecyclerView.Adapter<Beginning
     }
 
     class PlaceHolder extends RecyclerView.ViewHolder {
-        private TextView tvCountry;
-        private TextView tvCity;
+        TextView tvCountry;
+        TextView tvCity;
+        RadioButton select;
 
         public PlaceHolder(View itemView) {
             super(itemView);
             tvCountry = (TextView) itemView.findViewById(R.id.tvCountry);
             tvCity = (TextView) itemView.findViewById(R.id.tvCity);
+            select = (RadioButton) itemView.findViewById(R.id.rbSelect);
+
+            itemView.setOnClickListener(v -> {
+                lastCheckedPosition = getAdapterPosition();
+                notifyItemRangeChanged(0, predictions.size());
+                notifyItemChanged(lastCheckedPosition);
+                recyclerViewListener.onClick(predictions.get(getAdapterPosition()));
+            });
         }
 
         public void bindView(Prediction p) {
-            tvCountry.setText(p.getTerms().get(p.getTerms().size()-1).getValue());
+            tvCountry.setText(p.getTerms().get(p.getTerms().size() - 1).getValue());
             tvCity.setText(p.getDescription());
 
 

@@ -2,22 +2,22 @@ package com.example.user.geotask.repository;
 
 import android.support.annotation.NonNull;
 
-import com.example.user.geotask.model.places.Places;
-
 /**
  * Created by Serdun on 16.07.2017.
  */
 
 public interface Repository {
 
-    interface PlaceCallback {
+    interface Callback<T> {
 
-        void onWeatherLoaded(Places weather);
+        void onLoaded(T o);
 
         void onDataNotAvailable();
     }
 
 
-    void getPlaces(String places,@NonNull PlaceCallback callback);
+    void getPlaces(String places,@NonNull Callback callback);
+    void getPlaceDetail(String id,@NonNull Callback callback);
+
 
 }

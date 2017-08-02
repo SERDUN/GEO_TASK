@@ -41,7 +41,12 @@ public class PlacesRepository implements Repository {
 
 
     @Override
-    public void getPlaces(String places, @NonNull PlaceCallback callback) {
+    public void getPlaces(String places, @NonNull Callback callback) {
         remoteRepository.getPlaces(places, callback);
+    }
+
+    @Override
+    public void getPlaceDetail(String id, @NonNull Callback callback) {
+        remoteRepository.getPlaceDetail(id, callback);
     }
 }

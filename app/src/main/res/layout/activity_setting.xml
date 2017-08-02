@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#32383d">
+    android:background="#32383d"
+    android:id="@+id/main_container">
     <!-- ViewPager -->
     <ImageView
         android:id="@+id/imageViewBackground"
